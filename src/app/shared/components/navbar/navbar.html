@@ -1,0 +1,76 @@
+<nav class="navbar">
+  <div class="navbar-container eo-container">
+    <!-- Brand -->
+    <a routerLink="/" class="navbar-brand" (click)="closeMobileMenu()">
+      <i class="pi pi-calendar-clock navbar-brand-icon"></i>
+      <span class="navbar-brand-text">Eventorg</span>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="navbar-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        >Home</a
+      >
+      <a routerLink="/pricing" routerLinkActive="active">Pricing</a>
+    </div>
+
+    <!-- Desktop Actions -->
+    <div class="navbar-actions">
+      <p-button
+        [icon]="theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        (onClick)="toggleTheme()"
+        [attr.aria-label]="'Switch to ' + (theme() === 'dark' ? 'light' : 'dark') + ' mode'"
+      />
+      <a routerLink="/login">
+        <p-button label="Log in" [text]="true" severity="secondary" />
+      </a>
+      <a routerLink="/register">
+        <p-button label="Sign up" [rounded]="true" />
+      </a>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <div class="navbar-mobile-toggle">
+      <p-button
+        [icon]="theme() === 'dark' ? 'pi pi-sun' : 'pi pi-moon'"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        (onClick)="toggleTheme()"
+      />
+      <p-button
+        [icon]="mobileMenuOpen() ? 'pi pi-times' : 'pi pi-bars'"
+        [rounded]="true"
+        [text]="true"
+        severity="secondary"
+        (onClick)="toggleMobileMenu()"
+        aria-label="Toggle menu"
+      />
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  @if (mobileMenuOpen()) {
+    <div class="navbar-mobile-menu">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        (click)="closeMobileMenu()"
+        >Home</a
+      >
+      <a routerLink="/pricing" routerLinkActive="active" (click)="closeMobileMenu()">Pricing</a>
+      <div class="navbar-mobile-actions">
+        <a routerLink="/login" (click)="closeMobileMenu()">
+          <p-button label="Log in" [text]="true" severity="secondary" styleClass="w-full" />
+        </a>
+        <a routerLink="/register" (click)="closeMobileMenu()">
+          <p-button label="Sign up" [rounded]="true" styleClass="w-full" />
+        </a>
+      </div>
+    </div>
+  }
+</nav>

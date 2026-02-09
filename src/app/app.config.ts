@@ -1,22 +1,28 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura';
 
+import { EventorgPreset } from './core/theme/eventorg-preset';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-     providePrimeNG({
+    provideRouter(routes, withComponentInputBinding()),
+    provideAnimationsAsync(),
+    providePrimeNG({
       ripple: true,
-            theme: {
-                preset: Aura,
-                options: {
-    darkModeSelector: '.my-app-dark'
-}
-            }
-          })
-  ]
+      theme: {
+        preset: EventorgPreset,
+        options: {
+          darkModeSelector: '.my-app-dark',
+          cssLayer: {
+            name: 'primeng',
+            order: 'reset, primeng, app',
+          },
+        },
+      },
+    }),
+  ],
 };

@@ -1,0 +1,88 @@
+<section class="pricing-hero eo-section">
+  <div class="eo-container">
+    <div class="section-header">
+      <span class="section-tag">Pricing</span>
+      <h1 class="section-title">Simple, Transparent Pricing</h1>
+      <p class="section-subtitle">
+        Choose the plan that fits your needs. Upgrade or downgrade at any time.
+      </p>
+
+      <!-- Billing Toggle -->
+      <div class="billing-toggle">
+        <span [class.active]="!isYearly()">Monthly</span>
+        <p-toggleswitch [(ngModel)]="isYearlyValue" (onChange)="toggleBilling()" />
+        <span [class.active]="isYearly()">
+          Yearly
+          <span class="billing-save">Save 20%</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="pricing-grid">
+      @for (tier of tiers; track tier.name) {
+        <div class="pricing-card" [class.pricing-card-highlighted]="tier.highlighted">
+          @if (tier.highlighted) {
+            <div class="pricing-popular">
+              <p-tag value="Most Popular" severity="info" [rounded]="true" />
+            </div>
+          }
+
+          <div class="pricing-card-header">
+            <h3 class="pricing-name">{{ tier.name }}</h3>
+            <p class="pricing-desc">{{ tier.description }}</p>
+          </div>
+
+          <div class="pricing-price">
+            @if (tier.monthlyPrice !== null) {
+              <span class="pricing-amount">{{ getPrice(tier) }}</span>
+              @if (tier.monthlyPrice > 0) {
+                <span class="pricing-period">{{ tier.priceLabel }}</span>
+              }
+              @if (tier.monthlyPrice === 0) {
+                <span class="pricing-period">{{ tier.priceLabel }}</span>
+              }
+            } @else {
+              <span class="pricing-custom">{{ tier.priceLabel }}</span>
+            }
+          </div>
+
+          @if (isYearly() && tier.monthlyPrice && tier.monthlyPrice > 0) {
+            <p class="pricing-billed">Billed {{ (tier.yearlyPrice ?? 0) * 12 | number }}/year</p>
+          }
+
+          <p-divider />
+
+          <ul class="pricing-features">
+            @for (feature of tier.features; track feature) {
+              <li>
+                <i class="pi pi-check"></i>
+                <span>{{ feature }}</span>
+              </li>
+            }
+          </ul>
+
+          <div class="pricing-action">
+            <a routerLink="/register">
+              <p-button
+                [label]="tier.buttonLabel"
+                [severity]="tier.highlighted ? undefined : 'secondary'"
+                [outlined]="!tier.highlighted"
+                [rounded]="true"
+                styleClass="w-full"
+              />
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- FAQ hint -->
+    <div class="pricing-faq-hint">
+      <p>
+        Have questions? Check our <a routerLink="/">FAQ</a> or
+        <a routerLink="/">contact our sales team</a>.
+      </p>
+    </div>
+  </div>
+</section>

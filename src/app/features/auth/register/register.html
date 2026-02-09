@@ -1,0 +1,171 @@
+<section class="auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <!-- Header -->
+      <div class="auth-header">
+        <a routerLink="/" class="auth-brand">
+          <i class="pi pi-calendar-clock"></i>
+          <span>Eventorg</span>
+        </a>
+        <h1 class="auth-title">Create your account</h1>
+        <p class="auth-subtitle">Start organizing events in minutes</p>
+      </div>
+
+      <!-- Social Signup -->
+      <div class="auth-social">
+        <p-button
+          label="Continue with Google"
+          icon="pi pi-google"
+          severity="secondary"
+          [outlined]="true"
+          [rounded]="true"
+          styleClass="w-full"
+        />
+        <p-button
+          label="Continue with GitHub"
+          icon="pi pi-github"
+          severity="secondary"
+          [outlined]="true"
+          [rounded]="true"
+          styleClass="w-full"
+        />
+      </div>
+
+      <p-divider align="center">
+        <span class="auth-divider-text">or sign up with email</span>
+      </p-divider>
+
+      <!-- Register Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <!-- Full Name -->
+        <div class="auth-field">
+          <p-floatlabel variant="on">
+            <input
+              pInputText
+              id="fullName"
+              formControlName="fullName"
+              type="text"
+              autocomplete="name"
+              class="w-full"
+            />
+            <label for="fullName">Full name</label>
+          </p-floatlabel>
+          @if (registerForm.controls.fullName.touched && registerForm.controls.fullName.errors) {
+            <small class="auth-error">
+              @if (registerForm.controls.fullName.errors['required']) {
+                Full name is required
+              } @else if (registerForm.controls.fullName.errors['minlength']) {
+                Name must be at least 2 characters
+              }
+            </small>
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="auth-field">
+          <p-floatlabel variant="on">
+            <input
+              pInputText
+              id="email"
+              formControlName="email"
+              type="email"
+              autocomplete="email"
+              class="w-full"
+            />
+            <label for="email">Email address</label>
+          </p-floatlabel>
+          @if (registerForm.controls.email.touched && registerForm.controls.email.errors) {
+            <small class="auth-error">
+              @if (registerForm.controls.email.errors['required']) {
+                Email is required
+              } @else if (registerForm.controls.email.errors['email']) {
+                Please enter a valid email
+              }
+            </small>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="auth-field">
+          <p-floatlabel variant="on">
+            <p-password
+              id="password"
+              formControlName="password"
+              [toggleMask]="true"
+              autocomplete="new-password"
+              styleClass="w-full"
+              inputStyleClass="w-full"
+              fluid
+            />
+            <label for="password">Password</label>
+          </p-floatlabel>
+          @if (registerForm.controls.password.touched && registerForm.controls.password.errors) {
+            <small class="auth-error">
+              @if (registerForm.controls.password.errors['required']) {
+                Password is required
+              } @else if (registerForm.controls.password.errors['minlength']) {
+                Password must be at least 8 characters
+              }
+            </small>
+          }
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="auth-field">
+          <p-floatlabel variant="on">
+            <p-password
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              [toggleMask]="true"
+              [feedback]="false"
+              autocomplete="new-password"
+              styleClass="w-full"
+              inputStyleClass="w-full"
+              fluid
+            />
+            <label for="confirmPassword">Confirm password</label>
+          </p-floatlabel>
+          @if (
+            registerForm.controls.confirmPassword.touched &&
+            registerForm.controls.confirmPassword.errors
+          ) {
+            <small class="auth-error">
+              @if (registerForm.controls.confirmPassword.errors['required']) {
+                Please confirm your password
+              } @else if (registerForm.controls.confirmPassword.errors['passwordMismatch']) {
+                Passwords do not match
+              }
+            </small>
+          }
+        </div>
+
+        <!-- Terms -->
+        <div class="auth-terms">
+          <p-checkbox formControlName="terms" [binary]="true" inputId="terms" />
+          <label for="terms" class="auth-terms-label">
+            I agree to the <a routerLink="/">Terms of Service</a> and
+            <a routerLink="/">Privacy Policy</a>
+          </label>
+        </div>
+        @if (registerForm.controls.terms.touched && registerForm.controls.terms.errors) {
+          <small class="auth-error">You must accept the terms to continue</small>
+        }
+
+        <!-- Submit -->
+        <p-button
+          type="submit"
+          label="Create account"
+          [rounded]="true"
+          styleClass="w-full"
+          [loading]="false"
+        />
+      </form>
+
+      <!-- Footer -->
+      <p class="auth-footer">
+        Already have an account?
+        <a routerLink="/login" class="auth-footer-link">Sign in</a>
+      </p>
+    </div>
+  </div>
+</section>

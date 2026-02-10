@@ -1,4 +1,5 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { User, UserSchema } from './schemas/user.schema';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -7,7 +8,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
-import { User, UserSchema } from './schemas/user.schema';
 
 /**
  * Self-contained authentication module.

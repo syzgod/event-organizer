@@ -1,6 +1,7 @@
+import { Controller, Get } from '@nestjs/common';
+
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { Controller, Get } from '@nestjs/common';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -20,9 +21,7 @@ class HealthController {
     ConfigModule.forRoot({ isGlobal: true }),
 
     // MongoDB connection (reads MONGODB_URI from env)
-    MongooseModule.forRoot(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/event-organizer',
-    ),
+    MongooseModule.forRoot(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-organizer'),
 
     // Modular auth — can be extracted into its own package
     AuthModule,

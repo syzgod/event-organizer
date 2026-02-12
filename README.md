@@ -57,3 +57,28 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Backend Auth Setup
+
+The NestJS API lives in [backend/](backend/) and provides:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/auth/me` (Bearer token required)
+
+Create `backend/.env` from `backend/.env.example` and set:
+
+- `MONGODB_URI`
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN`
+- `CLIENT_URL`
+
+`JWT_SECRET` and `MONGODB_URI` are required in production mode.
+
+## Frontend API URL
+
+Angular auth requests use `src/environments/environment.ts`:
+
+- `apiBaseUrl` default: `http://localhost:3000/api`
+
+Production replacement is configured with `src/environments/environment.prod.ts`.

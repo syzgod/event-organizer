@@ -11,10 +11,17 @@ import { PassportStrategy } from '@nestjs/passport';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(config: ConfigService) {
+    const isProduction = config.get<string>('NODE_ENV') === 'production';
+    const jwtSecret = config.get<string>('JWT_SECRET');
+
+    if (isProduction && !jwtSecret) {
+      throw new Error('JWT_SECRET is required in production');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_SECRET', 'change-me'),
+      secretOrKey: jwtSecret ?? 'change-me-dev-only',
     });
   }
 

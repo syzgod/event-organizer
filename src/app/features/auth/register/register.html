@@ -37,6 +37,12 @@
 
       <!-- Register Form -->
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+        @if (submitError()) {
+          <div class="auth-server-error" role="alert" aria-live="polite">
+            {{ submitError() }}
+          </div>
+        }
+
         <!-- Full Name -->
         <div class="auth-field">
           <p-floatlabel variant="on">
@@ -125,14 +131,11 @@
             />
             <label for="confirmPassword">Confirm password</label>
           </p-floatlabel>
-          @if (
-            registerForm.controls.confirmPassword.touched &&
-            registerForm.controls.confirmPassword.errors
-          ) {
+          @if (registerForm.controls.confirmPassword.touched) {
             <small class="auth-error">
-              @if (registerForm.controls.confirmPassword.errors['required']) {
+              @if (registerForm.controls.confirmPassword.errors?.['required']) {
                 Please confirm your password
-              } @else if (registerForm.controls.confirmPassword.errors['passwordMismatch']) {
+              } @else if (registerForm.errors?.['passwordMismatch']) {
                 Passwords do not match
               }
             </small>
@@ -157,7 +160,8 @@
           label="Create account"
           [rounded]="true"
           styleClass="w-full"
-          [loading]="false"
+          [loading]="isSubmitting()"
+          [disabled]="isSubmitting()"
         />
       </form>
 

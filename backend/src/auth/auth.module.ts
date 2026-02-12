@@ -4,6 +4,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtSignOptions } from '@nestjs/jwt';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -30,12 +31,22 @@ import { PassportModule } from '@nestjs/passport';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET', 'change-me'),
-        signOptions: {
-          expiresIn: config.get<string>('JWT_EXPIRES_IN', '7d'),
-        },
-      }),
+      useFactory: (config: ConfigService) => {
+        const isProduction = config.get<string>('NODE_ENV') === 'production';
+        const jwtSecret = config.get<string>('JWT_SECRET');
+        const jwtExpiresIn = config.get<string>('JWT_EXPIRES_IN') ?? '7d';
+
+        if (isProduction && !jwtSecret) {
+          throw new Error('JWT_SECRET is required in production');
+        }
+
+        return {
+          secret: jwtSecret ?? 'change-me-dev-only',
+          signOptions: {
+            expiresIn: jwtExpiresIn as JwtSignOptions['expiresIn'],
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

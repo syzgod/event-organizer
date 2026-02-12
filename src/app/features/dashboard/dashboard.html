@@ -1,0 +1,19 @@
+<section class="dashboard-page section-padding">
+  <div class="dashboard-container">
+    <div class="dashboard-card">
+      <span class="dashboard-tag">Secure Area</span>
+      <h1 class="dashboard-title">Welcome to your dashboard</h1>
+      <p class="dashboard-subtitle">
+        @if (user()) {
+          Signed in as <strong>{{ user()?.fullName }}</strong> ({{ user()?.email }})
+        } @else {
+          Loading your account information...
+        }
+      </p>
+
+      <div class="dashboard-actions">
+        <button pButton type="button" label="Sign out" [rounded]="true" (click)="logout()"></button>
+      </div>
+    </div>
+  </div>
+</section>

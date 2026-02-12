@@ -37,6 +37,12 @@
 
       <!-- Login Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        @if (submitError()) {
+          <div class="auth-server-error" role="alert" aria-live="polite">
+            {{ submitError() }}
+          </div>
+        }
+
         <!-- Email -->
         <div class="auth-field">
           <p-floatlabel variant="on">
@@ -102,7 +108,8 @@
           label="Sign in"
           [rounded]="true"
           styleClass="w-full"
-          [loading]="false"
+          [loading]="isSubmitting()"
+          [disabled]="isSubmitting()"
         />
       </form>
 

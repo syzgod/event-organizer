@@ -12,6 +12,7 @@ import {
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
+import { RequestUser } from './auth.types';
 import { RegisterDto } from './dto/register.dto';
 
 @Controller('auth')
@@ -31,7 +32,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@Request() req: { user: { userId: string } }) {
+  async getProfile(@Request() req: { user: RequestUser }) {
     return this.authService.getProfile(req.user.userId);
   }
 }

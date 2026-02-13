@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { catchError, of } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { catchError, of, take } from 'rxjs';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ButtonModule } from 'primeng/button';
@@ -11,15 +11,18 @@ import { ButtonModule } from 'primeng/button';
   styleUrl: './dashboard.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private readonly authService = inject(AuthService);
   readonly user = this.authService.user;
 
-  constructor() {
+  ngOnInit(): void {
     if (!this.user()) {
       this.authService
         .loadProfile()
-        .pipe(catchError(() => of(null)))
+        .pipe(
+          catchError(() => of(null)),
+          take(1),
+        )
         .subscribe();
     }
   }

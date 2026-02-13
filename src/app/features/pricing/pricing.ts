@@ -1,11 +1,12 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+
 import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
+import { DecimalPipe } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { TagModule } from 'primeng/tag';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 interface PricingTier {
   name: string;
@@ -36,7 +37,14 @@ interface PricingTier {
 })
 export class PricingComponent {
   readonly isYearly = signal(false);
-  isYearlyValue = false;
+
+  get yearlyBilling(): boolean {
+    return this.isYearly();
+  }
+
+  set yearlyBilling(value: boolean) {
+    this.isYearly.set(value);
+  }
 
   readonly tiers: PricingTier[] = [
     {
@@ -127,10 +135,5 @@ export class PricingComponent {
     if (tier.monthlyPrice === null) return '';
     if (tier.monthlyPrice === 0) return '$0';
     return this.isYearly() ? `$${tier.yearlyPrice}` : `$${tier.monthlyPrice}`;
-  }
-
-  toggleBilling(): void {
-    this.isYearlyValue = !this.isYearlyValue;
-    this.isYearly.set(this.isYearlyValue);
   }
 }

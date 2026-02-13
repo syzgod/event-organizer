@@ -10,7 +10,7 @@
       <!-- Billing Toggle -->
       <div class="billing-toggle">
         <span [class.active]="!isYearly()">Monthly</span>
-        <p-toggleswitch [(ngModel)]="isYearlyValue" (onChange)="toggleBilling()" />
+        <p-toggleswitch [(ngModel)]="yearlyBilling" />
         <span [class.active]="isYearly()">
           Yearly
           <span class="billing-save">Save 20%</span>

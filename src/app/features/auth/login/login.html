@@ -1,123 +1,56 @@
-<section class="auth-page">
-  <div class="auth-container">
-    <div class="auth-card">
-      <!-- Header -->
-      <div class="auth-header">
-        <a routerLink="/" class="auth-brand">
-          <i class="pi pi-calendar-clock"></i>
-          <span>Eventorg</span>
-        </a>
-        <h1 class="auth-title">Welcome back</h1>
-        <p class="auth-subtitle">Sign in to your account to continue</p>
+<app-auth-shell
+  title="Welcome back"
+  subtitle="Sign in to your account to continue"
+  footerText="Don't have an account?"
+  footerLinkLabel="Sign up"
+  footerLink="/register"
+>
+  <app-auth-providers dividerText="or sign in with email" />
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+    @if (submitError()) {
+      <div class="auth-server-error" role="alert" aria-live="polite">
+        {{ submitError() }}
       </div>
+    }
 
-      <!-- Social Login -->
-      <div class="auth-social">
-        <p-button
-          label="Continue with Google"
-          icon="pi pi-google"
-          severity="secondary"
-          [outlined]="true"
-          [rounded]="true"
-          styleClass="w-full"
-        />
-        <p-button
-          label="Continue with GitHub"
-          icon="pi pi-github"
-          severity="secondary"
-          [outlined]="true"
-          [rounded]="true"
-          styleClass="w-full"
-        />
+    <!-- Email -->
+    <app-auth-text-field
+      id="email"
+      label="Email address"
+      type="email"
+      autocomplete="email"
+      [control]="loginForm.controls.email"
+      requiredMessage="Email is required"
+      emailMessage="Please enter a valid email"
+    />
+
+    <app-auth-password-field
+      id="password"
+      label="Password"
+      autocomplete="current-password"
+      [control]="loginForm.controls.password"
+      requiredMessage="Password is required"
+      minLengthMessage="Password must be at least 6 characters"
+      [feedback]="false"
+    />
+
+    <!-- Remember Me & Forgot Password -->
+    <div class="auth-options">
+      <div class="auth-remember">
+        <p-checkbox formControlName="rememberMe" [binary]="true" inputId="rememberMe" />
+        <label for="rememberMe" class="auth-remember-label">Remember me</label>
       </div>
-
-      <p-divider align="center">
-        <span class="auth-divider-text">or sign in with email</span>
-      </p-divider>
-
-      <!-- Login Form -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-        @if (submitError()) {
-          <div class="auth-server-error" role="alert" aria-live="polite">
-            {{ submitError() }}
-          </div>
-        }
-
-        <!-- Email -->
-        <div class="auth-field">
-          <p-floatlabel variant="on">
-            <input
-              pInputText
-              id="email"
-              formControlName="email"
-              type="email"
-              autocomplete="email"
-              class="w-full"
-            />
-            <label for="email">Email address</label>
-          </p-floatlabel>
-          @if (loginForm.controls.email.touched && loginForm.controls.email.errors) {
-            <small class="auth-error">
-              @if (loginForm.controls.email.errors['required']) {
-                Email is required
-              } @else if (loginForm.controls.email.errors['email']) {
-                Please enter a valid email
-              }
-            </small>
-          }
-        </div>
-
-        <!-- Password -->
-        <div class="auth-field">
-          <p-floatlabel variant="on">
-            <p-password
-              id="password"
-              formControlName="password"
-              [toggleMask]="true"
-              [feedback]="false"
-              autocomplete="current-password"
-              styleClass="w-full"
-              inputStyleClass="w-full"
-              fluid
-            />
-            <label for="password">Password</label>
-          </p-floatlabel>
-          @if (loginForm.controls.password.touched && loginForm.controls.password.errors) {
-            <small class="auth-error">
-              @if (loginForm.controls.password.errors['required']) {
-                Password is required
-              } @else if (loginForm.controls.password.errors['minlength']) {
-                Password must be at least 6 characters
-              }
-            </small>
-          }
-        </div>
-
-        <!-- Remember Me & Forgot Password -->
-        <div class="auth-options">
-          <div class="auth-remember">
-            <p-checkbox formControlName="rememberMe" [binary]="true" inputId="rememberMe" />
-            <label for="rememberMe" class="auth-remember-label">Remember me</label>
-          </div>
-          <a routerLink="/" class="auth-forgot">Forgot password?</a>
-        </div>
-
-        <!-- Submit -->
-        <p-button
-          type="submit"
-          label="Sign in"
-          [rounded]="true"
-          styleClass="w-full"
-          [loading]="isSubmitting()"
-          [disabled]="isSubmitting()"
-        />
-      </form>
-
-      <!-- Footer -->
-      <p class="auth-footer">
-        Don't have an account?
-        <a routerLink="/register" class="auth-footer-link">Sign up</a>
-      </p>
+      <a routerLink="/" class="auth-forgot">Forgot password?</a>
     </div>
-  </div>
-</section>
+
+    <p-button
+      type="submit"
+      label="Sign in"
+      [rounded]="true"
+      styleClass="w-full"
+      [loading]="isSubmitting()"
+      [disabled]="isSubmitting()"
+    />
+  </form>
+</app-auth-shell>

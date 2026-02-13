@@ -31,10 +31,6 @@ let AuthService = class AuthService {
     async register(dto) {
         const email = dto.email.trim().toLowerCase();
         const fullName = dto.fullName.trim();
-        const existing = await this.userModel.findOne({ email });
-        if (existing) {
-            throw new common_1.ConflictException('Email is already registered');
-        }
         const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
         try {
             const user = await this.userModel.create({
@@ -42,11 +38,7 @@ let AuthService = class AuthService {
                 email,
                 password: hashedPassword,
             });
-            const token = this.signToken(user._id.toString());
-            return {
-                user: this.sanitize(user),
-                token,
-            };
+            return this.buildAuthResponse(user);
         }
         catch (error) {
             if (this.isDuplicateEmailError(error)) {
@@ -61,11 +53,7 @@ let AuthService = class AuthService {
         if (!user || !(await bcrypt.compare(dto.password, user.password))) {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
-        const token = this.signToken(user._id.toString());
-        return {
-            user: this.sanitize(user),
-            token,
-        };
+        return this.buildAuthResponse(user);
     }
     async getProfile(userId) {
         const user = await this.userModel.findById(userId);
@@ -79,10 +67,16 @@ let AuthService = class AuthService {
     }
     sanitize(user) {
         return {
-            id: user._id,
+            id: user._id.toString(),
             fullName: user.fullName,
             email: user.email,
             createdAt: user.createdAt,
+        };
+    }
+    buildAuthResponse(user) {
+        return {
+            user: this.sanitize(user),
+            token: this.signToken(user._id.toString()),
         };
     }
     isDuplicateEmailError(error) {

@@ -2,14 +2,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { AuthErrorService } from '../../../core/auth/auth-error.service';
+import { AuthPasswordFieldComponent } from '../../../shared/components/auth/auth-password-field/auth-password-field';
+import { AuthProvidersComponent } from '../../../shared/components/auth/auth-providers/auth-providers';
 import { AuthService } from '../../../core/auth/auth.service';
+import { AuthShellComponent } from '../../../shared/components/auth/auth-shell/auth-shell';
+import { AuthTextFieldComponent } from '../../../shared/components/auth/auth-text-field/auth-text-field';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { DividerModule } from 'primeng/divider';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { HttpErrorResponse } from '@angular/common/http';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { finalize } from 'rxjs';
 import { signal } from '@angular/core';
 
@@ -19,11 +19,11 @@ import { signal } from '@angular/core';
     RouterLink,
     ReactiveFormsModule,
     ButtonModule,
-    InputTextModule,
-    PasswordModule,
     CheckboxModule,
-    DividerModule,
-    FloatLabelModule,
+    AuthShellComponent,
+    AuthProvidersComponent,
+    AuthTextFieldComponent,
+    AuthPasswordFieldComponent,
   ],
   templateUrl: './login.html',
   styleUrl: './login.css',
@@ -32,6 +32,7 @@ import { signal } from '@angular/core';
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly authErrorService = inject(AuthErrorService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -73,30 +74,16 @@ export class LoginComponent {
           void this.router.navigateByUrl(returnUrl);
         },
         error: (error: unknown) => {
-          this.submitError.set(this.getErrorMessage(error));
+          this.submitError.set(
+            this.authErrorService.getMessage(error, {
+              network: 'Cannot reach the server right now. Please try again in a moment.',
+              byStatus: {
+                401: 'Invalid email or password.',
+              },
+              fallback: 'Something went wrong while signing in. Please try again.',
+            }),
+          );
         },
       });
-  }
-
-  private getErrorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      if (error.status === 0) {
-        return 'Cannot reach the server right now. Please try again in a moment.';
-      }
-
-      if (error.status === 401) {
-        return 'Invalid email or password.';
-      }
-
-      if (typeof error.error?.message === 'string') {
-        return error.error.message;
-      }
-
-      if (Array.isArray(error.error?.message) && error.error.message.length > 0) {
-        return error.error.message[0];
-      }
-    }
-
-    return 'Something went wrong while signing in. Please try again.';
   }
 }

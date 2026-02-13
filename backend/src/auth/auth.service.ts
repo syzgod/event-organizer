@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 
+import { AuthResponse, AuthUser } from './auth.types';
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { User, UserDocument } from './schemas/user.schema';
 
@@ -20,14 +21,9 @@ export class AuthService {
   ) {}
 
   // ── Register ─────────────────────────────────────────────
-  async register(dto: RegisterDto) {
+  async register(dto: RegisterDto): Promise<AuthResponse> {
     const email = dto.email.trim().toLowerCase();
     const fullName = dto.fullName.trim();
-
-    const existing = await this.userModel.findOne({ email });
-    if (existing) {
-      throw new ConflictException('Email is already registered');
-    }
 
     const hashedPassword = await bcrypt.hash(dto.password, SALT_ROUNDS);
 
@@ -38,12 +34,7 @@ export class AuthService {
         password: hashedPassword,
       });
 
-      const token = this.signToken(user._id.toString());
-
-      return {
-        user: this.sanitize(user),
-        token,
-      };
+      return this.buildAuthResponse(user);
     } catch (error: unknown) {
       if (this.isDuplicateEmailError(error)) {
         throw new ConflictException('Email is already registered');
@@ -54,7 +45,7 @@ export class AuthService {
   }
 
   // ── Login ────────────────────────────────────────────────
-  async login(dto: LoginDto) {
+  async login(dto: LoginDto): Promise<AuthResponse> {
     const email = dto.email.trim().toLowerCase();
     const user = await this.userModel.findOne({ email }).select('+password');
 
@@ -62,16 +53,11 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    const token = this.signToken(user._id.toString());
-
-    return {
-      user: this.sanitize(user),
-      token,
-    };
+    return this.buildAuthResponse(user);
   }
 
   // ── Get profile ──────────────────────────────────────────
-  async getProfile(userId: string) {
+  async getProfile(userId: string): Promise<AuthUser> {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -84,12 +70,19 @@ export class AuthService {
     return this.jwtService.sign({ sub: userId });
   }
 
-  private sanitize(user: UserDocument) {
+  private sanitize(user: UserDocument): AuthUser {
     return {
-      id: user._id,
+      id: user._id.toString(),
       fullName: user.fullName,
       email: user.email,
       createdAt: user.createdAt,
+    };
+  }
+
+  private buildAuthResponse(user: UserDocument): AuthResponse {
+    return {
+      user: this.sanitize(user),
+      token: this.signToken(user._id.toString()),
     };
   }
 

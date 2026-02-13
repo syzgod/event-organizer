@@ -8,15 +8,22 @@ import {
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { AuthErrorService } from '../../../core/auth/auth-error.service';
+import { AuthPasswordFieldComponent } from '../../../shared/components/auth/auth-password-field/auth-password-field';
+import { AuthProvidersComponent } from '../../../shared/components/auth/auth-providers/auth-providers';
 import { AuthService } from '../../../core/auth/auth.service';
+import { AuthShellComponent } from '../../../shared/components/auth/auth-shell/auth-shell';
+import { AuthTextFieldComponent } from '../../../shared/components/auth/auth-text-field/auth-text-field';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { DividerModule } from 'primeng/divider';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { HttpErrorResponse } from '@angular/common/http';
-import { InputTextModule } from 'primeng/inputtext';
-import { PasswordModule } from 'primeng/password';
 import { finalize } from 'rxjs';
+
+function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+
+  return password === confirmPassword ? null : { passwordMismatch: true };
+}
 
 @Component({
   selector: 'app-register',
@@ -24,11 +31,11 @@ import { finalize } from 'rxjs';
     RouterLink,
     ReactiveFormsModule,
     ButtonModule,
-    InputTextModule,
-    PasswordModule,
     CheckboxModule,
-    DividerModule,
-    FloatLabelModule,
+    AuthShellComponent,
+    AuthProvidersComponent,
+    AuthTextFieldComponent,
+    AuthPasswordFieldComponent,
   ],
   templateUrl: './register.html',
   styleUrl: './register.css',
@@ -37,6 +44,7 @@ import { finalize } from 'rxjs';
 export class RegisterComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly authErrorService = inject(AuthErrorService);
   private readonly router = inject(Router);
 
   readonly isSubmitting = signal(false);
@@ -50,7 +58,7 @@ export class RegisterComponent {
       confirmPassword: ['', [Validators.required]],
       terms: [false, [Validators.requiredTrue]],
     },
-    { validators: [this.passwordMatchValidator] },
+    { validators: [passwordMatchValidator] },
   );
 
   onSubmit(): void {
@@ -79,41 +87,16 @@ export class RegisterComponent {
           void this.router.navigate(['/dashboard']);
         },
         error: (error: unknown) => {
-          this.submitError.set(this.getErrorMessage(error));
+          this.submitError.set(
+            this.authErrorService.getMessage(error, {
+              network: 'Cannot reach the server right now. Please try again in a moment.',
+              byStatus: {
+                409: 'That email is already registered. Please sign in instead.',
+              },
+              fallback: 'Something went wrong while creating your account. Please try again.',
+            }),
+          );
         },
       });
-  }
-
-  private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password');
-    const confirmPassword = control.get('confirmPassword');
-
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      return { passwordMismatch: true };
-    }
-
-    return null;
-  }
-
-  private getErrorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      if (error.status === 0) {
-        return 'Cannot reach the server right now. Please try again in a moment.';
-      }
-
-      if (error.status === 409) {
-        return 'That email is already registered. Please sign in instead.';
-      }
-
-      if (typeof error.error?.message === 'string') {
-        return error.error.message;
-      }
-
-      if (Array.isArray(error.error?.message) && error.error.message.length > 0) {
-        return error.error.message[0];
-      }
-    }
-
-    return 'Something went wrong while creating your account. Please try again.';
   }
 }

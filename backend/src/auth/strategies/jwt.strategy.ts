@@ -1,4 +1,5 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { JwtPayload, RequestUser } from '../auth.types';
 
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
@@ -29,7 +30,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * Called after the token is verified.
    * The returned object is attached to `req.user`.
    */
-  validate(payload: { sub: string }) {
+  validate(payload: JwtPayload): RequestUser {
     return { userId: payload.sub };
   }
 }

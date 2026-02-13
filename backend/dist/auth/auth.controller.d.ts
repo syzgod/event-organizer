@@ -1,35 +1,13 @@
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RequestUser } from './auth.types';
 import { RegisterDto } from './dto/register.dto';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    register(dto: RegisterDto): Promise<{
-        user: {
-            id: import("mongoose").Types.ObjectId;
-            fullName: string;
-            email: string;
-            createdAt: Date;
-        };
-        token: string;
-    }>;
-    login(dto: LoginDto): Promise<{
-        user: {
-            id: import("mongoose").Types.ObjectId;
-            fullName: string;
-            email: string;
-            createdAt: Date;
-        };
-        token: string;
-    }>;
+    register(dto: RegisterDto): Promise<import("./auth.types").AuthResponse>;
+    login(dto: LoginDto): Promise<import("./auth.types").AuthResponse>;
     getProfile(req: {
-        user: {
-            userId: string;
-        };
-    }): Promise<{
-        id: import("mongoose").Types.ObjectId;
-        fullName: string;
-        email: string;
-        createdAt: Date;
-    }>;
+        user: RequestUser;
+    }): Promise<import("./auth.types").AuthUser>;
 }
